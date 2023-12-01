@@ -1,4 +1,4 @@
-FROM centos:7 as build
+FROM centos:centos7 as build
 
 ARG DEVTOOLSET_VERSION=11
 
@@ -25,6 +25,10 @@ RUN if [ ! "$(uname -m)" == "aarch64" ]; then \
         curl \
         debbuild \
         devtoolset-${DEVTOOLSET_VERSION} \
+        devtoolset-${DEVTOOLSET_VERSION}-gcc-c++ \
+        devtoolset-${DEVTOOLSET_VERSION}-gcc \
+        devtoolset-${DEVTOOLSET_VERSION}-gcc-gfortran \
+        devtoolset-${DEVTOOLSET_VERSION}-gdb \
         devtoolset-${DEVTOOLSET_VERSION}-libasan-devel \
         devtoolset-${DEVTOOLSET_VERSION}-libatomic-devel \
         devtoolset-${DEVTOOLSET_VERSION}-libtsan-devel \
@@ -69,6 +73,8 @@ RUN if [ ! "$(uname -m)" == "aarch64" ]; then \
     rm -f /etc/yum.repos.d/mono-centos7-stable.repo && \
     yum clean all && \
     rm -rf /var/cache/yum
+
+
 
 # TODO: Is this really necessary?!? -- from swift's dockerfile
 RUN sed -i -e 's/\*__block/\*__libc_block/g' /usr/include/unistd.h
