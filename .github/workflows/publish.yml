@@ -1,0 +1,24 @@
+name: Publish Ubuntu22 arm64 FoundationDB builder image
+on: [push]
+
+jobs:
+  publish-ubuntu22-arm64-foundationdb-builder-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+    
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+    
+      - name: Build the Ubuntu22 arm64 FoundationDB builder image and push it
+        run: |
+           IMAGE="ghcr.io/gm42/fdb-build-support:ubuntu22-latest"
+           docker buildx create --name multiarch --platform linux/amd64,linux/arm64/v8 --driver docker-container --driver-opt "network=host" \
+                                --buildkitd-flags "--allow-insecure-entitlement network.host --allow-insecure-entitlement security.insecure" --use
+    
+           cd docker/ubuntu22
+           exec docker buildx build --push --builder multiarch --progress=plain --platform linux/arm64/v8 -t "$IMAGE" .
