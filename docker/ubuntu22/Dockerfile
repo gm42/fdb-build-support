@@ -50,10 +50,11 @@ RUN cd /opt/boost_1_78_0 && \
 # Boost::context depends on some C++11 features, e.g. std::call_once; however,
 # gcc and clang are using different ABIs, thus a gcc-built Boost::context is
 # not linkable to clang objects.
+ARG ARCH=x86_64
 RUN export PATH="$PATH:/usr/lib/llvm-14/bin" && \
     cd /opt/boost_1_78_0_clang && \
     ./bootstrap.sh --with-toolset=clang --with-libraries=all && \
-    ./b2 link=static cxxflags="-std=c++14 -I/usr/include/c++/11 -I/usr/include/aarch64-linux-gnu/c++/11 -stdlib=libc++ -nostdlib++ -fPIC" linkflags="-stdlib=libc++ -nostdlib++ -static-libgcc -lc++ -lc++abi" --prefix=/opt/boost_1_78_0_clang -j32 install && \
+    ./b2 link=static cxxflags="-std=c++14 -I/usr/include/c++/11 -I/usr/include/${ARCH}-linux-gnu/c++/11 -stdlib=libc++ -nostdlib++ -fPIC" linkflags="-stdlib=libc++ -nostdlib++ -static-libgcc -lc++ -lc++abi" --prefix=/opt/boost_1_78_0_clang -j32 install && \
     rm -rf /opt/boost_1_78_0_clang/libs && \
     rm -rf /tmp/*
 
